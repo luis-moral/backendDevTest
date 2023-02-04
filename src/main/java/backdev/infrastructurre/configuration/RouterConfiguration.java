@@ -1,6 +1,6 @@
 package backdev.infrastructurre.configuration;
 
-import backdev.infrastructurre.handler.product.similar.GetSimilarProductsByIdHandler;
+import backdev.infrastructurre.handler.product.similar.GetSimilarProductsHandler;
 import backdev.infrastructurre.handler.status.get.GetStatusHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,11 +22,11 @@ public class RouterConfiguration {
     @Bean
     public RouterFunction<ServerResponse> routes(
         GetStatusHandler getStatusHandler,
-        GetSimilarProductsByIdHandler getSimilarProductsByIdHandler
+        GetSimilarProductsHandler getSimilarProductsHandler
     ) {
         return
             RouterFunctions
                 .route(RequestPredicates.GET(statusEndpoint), getStatusHandler::status)
-                .andRoute(RequestPredicates.GET(similarProductsEndpoint), getSimilarProductsByIdHandler::similar);
+                .andRoute(RequestPredicates.GET(similarProductsEndpoint), getSimilarProductsHandler::similar);
     }
 }

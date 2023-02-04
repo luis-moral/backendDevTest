@@ -1,6 +1,7 @@
 package backdev;
 
 import backdev.infrastructurre.Application;
+import backdev.infrastructurre.handler.product.similar.GetSimilarProductsItemResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,22 +31,19 @@ public class SimilarProductsFeature {
             .exchange()
                 .expectStatus()
                     .isOk()
-                .expectBody(new ParameterizedTypeReference<List<ResponseItem>>() {})
+                .expectBody(new ParameterizedTypeReference<List<GetSimilarProductsItemResponse>>() {})
                     .consumeWith(response ->
                         {
-                            List<ResponseItem> items = response.getResponseBody();
+                            List<GetSimilarProductsItemResponse> items = response.getResponseBody();
 
                             Assertions
                                 .assertThat(items)
                                 .containsExactlyInAnyOrder(
-                                    new ResponseItem("2", "product2", 10.0, true),
-                                    new ResponseItem("3", "product3", 15.0, false),
-                                    new ResponseItem("4", "product4", 17.50, true)
+                                    new GetSimilarProductsItemResponse("2", "product2", 10.0, true),
+                                    new GetSimilarProductsItemResponse("3", "product3", 15.0, false),
+                                    new GetSimilarProductsItemResponse("4", "product4", 17.50, true)
                                 );
                         }
                     );
-    }
-
-    private record ResponseItem(String id, String name, double number, boolean availability) {
     }
 }

@@ -1,8 +1,10 @@
 package backdev.infrastructurre.configuration;
 
-import backdev.domain.product.GetSimilarProductsService;
-import backdev.infrastructurre.handler.product.similar.GetSimilarProductsByIdHandler;
+import backdev.domain.product.SimilarProductsService;
+import backdev.infrastructurre.handler.product.similar.GetSimilarProductsHandler;
+import backdev.infrastructurre.handler.product.similar.GetSimilarProductsHandlerMapper;
 import backdev.infrastructurre.handler.status.get.GetStatusHandler;
+import backdev.infrastructurre.util.validator.RequestParameterValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,9 +17,14 @@ public class HandlerConfiguration {
     }
 
     @Bean
-    public GetSimilarProductsByIdHandler getSimilarProductsByIdHandler(
-        GetSimilarProductsService getSimilarProductsService
+    public GetSimilarProductsHandler getSimilarProductsHandler(
+        SimilarProductsService similarProductsService,
+        RequestParameterValidator requestParameterValidator
     ) {
-        return new GetSimilarProductsByIdHandler(getSimilarProductsService);
+        return
+            new GetSimilarProductsHandler(
+                similarProductsService,
+                new GetSimilarProductsHandlerMapper(requestParameterValidator)
+            );
     }
 }

@@ -1,6 +1,6 @@
 package backdev.infrastructurre.configuration;
 
-import backdev.domain.product.GetSimilarProductsService;
+import backdev.domain.product.SimilarProductsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class ServiceConfiguration {
 
     @Bean
-    public GetSimilarProductsService getSimilarProductsService() {
-        return new GetSimilarProductsService();
+    public SimilarProductsService similarProductsService() {
+        return new SimilarProductsService();
     }
 }

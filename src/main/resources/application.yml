@@ -18,7 +18,7 @@ logging:
       max-history: 7
 
 server:
-  port: 500
+  port: 5000
 
 endpoint:
   status:
