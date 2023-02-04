@@ -1,5 +1,6 @@
 package backdev;
 
+import backdev.infrastructurre.Application;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package backdev.handler.status.get;
+package backdev.infrastructurre.handler.status.get;
 
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
