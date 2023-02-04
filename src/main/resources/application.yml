@@ -1,0 +1,30 @@
+spring:
+  main:
+    banner-mode: "OFF"
+  output:
+    ansi:
+      enabled: DETECT
+
+logging:
+  level:
+    root: INFO
+    backdev.infrastructure.configuration: DEBUG
+  file:
+    name: "log/backdev-test.log"
+  logback:
+    rollingpolicy:
+      total-size-cap: 4 GB
+      max-file-size: 100 MB
+      max-history: 7
+
+server:
+  port: 500
+
+endpoint:
+  status:
+    path: "/status"
+  product:
+    path:
+      base: "/product"
+      by-id: "${endpoint.product.path.base}/{product_id}"
+      similar: "${endpoint.product.path.by-id}/similar"
