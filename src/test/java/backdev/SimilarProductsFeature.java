@@ -1,7 +1,6 @@
 package backdev;
 
-import backdev.infrastructurre.Application;
-import backdev.infrastructurre.handler.product.similar.GetSimilarProductsItemResponse;
+import backdev.infrastructure.handler.product.similar.GetSimilarProductsItemResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +31,7 @@ public class SimilarProductsFeature {
                 .expectStatus()
                     .isOk()
                 .expectBody(new ParameterizedTypeReference<List<GetSimilarProductsItemResponse>>() {})
-                    .consumeWith(response ->
-                        {
+                    .consumeWith(response -> {
                             List<GetSimilarProductsItemResponse> items = response.getResponseBody();
 
                             Assertions

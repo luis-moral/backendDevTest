@@ -17,6 +17,10 @@ logging:
       max-file-size: 100 MB
       max-history: 7
 
+service:
+  similar-products:
+    concurrency: 5
+
 server:
   port: 5000
 
