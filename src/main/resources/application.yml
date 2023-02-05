@@ -32,3 +32,7 @@ endpoint:
       base: "/product"
       by-id: "${endpoint.product.path.base}/{product_id}"
       similar: "${endpoint.product.path.by-id}/similar"
+
+client:
+  product:
+    url: "http://localhost:3001"
