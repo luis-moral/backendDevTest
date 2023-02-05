@@ -6,7 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(
 	scanBasePackages = {
 		"backdev.infrastructure.component",
-		"backdev.infrastructure.configuration"
+		"backdev.infrastructure.configuration",
+		"backdev.infrastructure.client"
 	}
 )
 public class Application {

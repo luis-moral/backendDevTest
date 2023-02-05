@@ -2,15 +2,12 @@ package backdev.infrastructure.client;
 
 import backdev.domain.exception.EntityNotFoundException;
 import backdev.test.RemoteProductServerMock;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Random;
 
@@ -24,7 +21,7 @@ public class RemoteProductClientShould {
         server = new RemoteProductServerMock(randomPort());
         server.start();
 
-        client = new RemoteProductClient(new RemoteProductClientConfiguration(server.url(), circuitBreakerRegistry()));
+        client = new RemoteProductClient(server.url());
     }
 
     @AfterEach
@@ -89,19 +86,5 @@ public class RemoteProductClientShould {
 
     private int randomPort() {
         return new Random().nextInt(52_000, 53_000);
-    }
-
-    private CircuitBreakerRegistry circuitBreakerRegistry() {
-        CircuitBreakerConfig circuitBreakerConfiguration =
-            CircuitBreakerConfig
-                .custom()
-                .slidingWindowSize(10)
-                .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
-                .waitDurationInOpenState(Duration.ofSeconds(5))
-                .minimumNumberOfCalls(5)
-                .failureRateThreshold(50.0f)
-                .build();
-
-        return CircuitBreakerRegistry.of(circuitBreakerConfiguration);
     }
 }
