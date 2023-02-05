@@ -9,13 +9,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ServiceConfiguration {
 
-    @Value("${service.similar-products.concurrency}")
-    private int similarProductsConcurrency;
+    @Value("${service.similar-products.parallelism}")
+    private int similarProductsParallelism;
 
     @Bean
     public SimilarProductsService similarProductsService(
         ProductRepository productRepository
     ) {
-        return new SimilarProductsService(productRepository, similarProductsConcurrency);
+        return new SimilarProductsService(productRepository, similarProductsParallelism);
     }
 }
