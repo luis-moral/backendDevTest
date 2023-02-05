@@ -3,8 +3,8 @@ package backdev;
 import backdev.infrastructure.handler.product.similar.GetSimilarProductsItemResponse;
 import backdev.test.RemoteProductServerMock;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +19,7 @@ import java.util.List;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class)
 public class SimilarProductsFeature {
 
-    private RemoteProductServerMock remoteProductServer;
+    private static RemoteProductServerMock remoteProductServer;
 
     @Value("${endpoint.product.path.similar}")
     private String similarProductsEndpoint;
@@ -27,14 +27,14 @@ public class SimilarProductsFeature {
     @Autowired
     private WebTestClient webClient;
 
-    @BeforeEach
-    public void setUp() {
+    @BeforeAll
+    public static void beforeAll() {
         remoteProductServer = new RemoteProductServerMock(43001);
         remoteProductServer.start();
     }
 
-    @AfterEach
-    public void tearDown() {
+    @AfterAll
+    public static void afterAll() {
         remoteProductServer.stop();
     }
 
@@ -59,5 +59,15 @@ public class SimilarProductsFeature {
                                 );
                         }
                     );
+    }
+
+    @Test public void
+    return_bad_request_if_product_does_not_exists() {
+        webClient
+            .get()
+                .uri(builder -> builder.path(similarProductsEndpoint).build("2500"))
+            .exchange()
+                .expectStatus()
+                    .isBadRequest();
     }
 }

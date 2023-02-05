@@ -9,6 +9,7 @@ logging:
   level:
     root: INFO
     backdev.infrastructure.configuration: DEBUG
+    backdev.domain.product: DEBUG
   file:
     name: "log/backdev-test.log"
   logback:

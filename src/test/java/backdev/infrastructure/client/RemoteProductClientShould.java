@@ -1,5 +1,6 @@
 package backdev.infrastructure.client;
 
+import backdev.domain.exception.EntityNotFoundException;
 import backdev.test.RemoteProductServerMock;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
@@ -41,6 +42,19 @@ public class RemoteProductClientShould {
     }
 
     @Test public void
+    return_domain_exception_if_product_details_not_found() {
+        StepVerifier
+            .create(client.product("25"))
+            .consumeErrorWith(
+                error ->
+                    Assertions
+                        .assertThat(error)
+                        .isInstanceOf(EntityNotFoundException.class)
+            )
+            .verify();
+    }
+
+    @Test public void
     get_similar_product_ids() {
         List<String> similarIds = List.of("2", "3", "4");
 
@@ -55,6 +69,19 @@ public class RemoteProductClientShould {
             .verifyComplete();
 
         server.verifySimilarIds(1);
+    }
+
+    @Test public void
+    return_domain_exception_if_similar_product_ids_not_found() {
+        StepVerifier
+            .create(client.product("25"))
+            .consumeErrorWith(
+                error ->
+                    Assertions
+                        .assertThat(error)
+                        .isInstanceOf(EntityNotFoundException.class)
+            )
+            .verify();
     }
 
     private int randomPort() {
