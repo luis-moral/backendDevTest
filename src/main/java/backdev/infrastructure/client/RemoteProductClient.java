@@ -1,7 +1,8 @@
 package backdev.infrastructure.client;
 
 import backdev.domain.exception.EntityNotFoundException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.reactor.circuitbreaker.operator.CircuitBreakerOperator;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -16,28 +17,33 @@ import java.util.function.Function;
 public class RemoteProductClient {
 
     private final WebClient webClient;
+    private final CircuitBreaker productBreaker;
+    private final CircuitBreaker similarIdsBreaker;
 
-    public RemoteProductClient(String url) {
-        webClient = WebClient.create(url);
+    public RemoteProductClient(RemoteProductClientConfiguration configuration) {
+        productBreaker = configuration.registry().circuitBreaker("product");
+        similarIdsBreaker = configuration.registry().circuitBreaker("similarIds");
+
+        webClient = WebClient.create(configuration.url());
     }
 
-    @CircuitBreaker(name = "product")
     public Mono<RemoteProduct> product(String productId) {
         return
             webClient
                 .get()
                     .uri(builder -> builder.path("product/{product_id}").build(productId))
                 .exchangeToMono(handleResponse(new ParameterizedTypeReference<RemoteProduct>() {}))
+                .transformDeferred(CircuitBreakerOperator.of(productBreaker))
                 .onErrorMap(WebClientResponseException.class, handleError());
     }
 
-    @CircuitBreaker(name = "similarIds")
     public Flux<String> similarIds(String productId) {
         return
             webClient
                 .get()
                     .uri(builder -> builder.path("product/{product_id}/similarids").build(productId))
                 .exchangeToMono(handleResponse(new ParameterizedTypeReference<List<String>>() {}))
+                .transformDeferred(CircuitBreakerOperator.of(similarIdsBreaker))
                 .onErrorMap(WebClientResponseException.class, handleError())
                 .flatMapMany(Flux::fromIterable);
     }

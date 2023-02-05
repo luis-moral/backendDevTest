@@ -1,3 +1,46 @@
+# Solution
+
+
+Java 17+ required.
+
+- [Notes](notes.md)
+- JMeter test [src/test/jmeter/backdev-test.jmx](src/test/jmeter/backdev-test.jmx) with the example requests already set.
+
+You can run the application:
+- Using gradle: `./gradlew clean bootRun`
+- Running [Application.main()](src/main/java/backdev/Application.java) from your IDE
+- Or generating a jar: `./gradlew clean bootJar` and runing it: `java -jar .\build\libs\backdev-test-0.0.1-SNAPSHOT.jar`
+
+
+---
+
+## Commands
+
+### Compile Code
+
+```
+./gradlew compileJava
+```
+
+### Run Tests
+
+```
+./gradlew clean test
+```
+
+### Run Application
+
+```
+./gradlew bootRun
+```
+
+### Generate Runnable Jar
+
+```
+./gradlew clean bootJar
+```
+
+
 # Backend dev technical test
 We want to offer a new feature to our customers showing similar products to the one they are currently seeing. To do this we agreed with our front-end applications to create a new REST API operation that will provide them the product detail of the similar products for a given one. [Here](./similarProducts.yaml) is the contract we agreed.
 
