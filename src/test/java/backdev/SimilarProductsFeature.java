@@ -1,7 +1,10 @@
 package backdev;
 
 import backdev.infrastructure.handler.product.similar.GetSimilarProductsItemResponse;
+import backdev.test.RemoteProductServerMock;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +19,24 @@ import java.util.List;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class)
 public class SimilarProductsFeature {
 
+    private RemoteProductServerMock remoteProductServer;
+
     @Value("${endpoint.product.path.similar}")
     private String similarProductsEndpoint;
 
     @Autowired
     private WebTestClient webClient;
+
+    @BeforeEach
+    public void setUp() {
+        remoteProductServer = new RemoteProductServerMock(43001);
+        remoteProductServer.start();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        remoteProductServer.stop();
+    }
 
     @Test public void
     return_similar_products() {
@@ -37,9 +53,9 @@ public class SimilarProductsFeature {
                             Assertions
                                 .assertThat(items)
                                 .containsExactlyInAnyOrder(
-                                    new GetSimilarProductsItemResponse("2", "product2", 10.0, true),
-                                    new GetSimilarProductsItemResponse("3", "product3", 15.0, false),
-                                    new GetSimilarProductsItemResponse("4", "product4", 17.50, true)
+                                    new GetSimilarProductsItemResponse("2", "product2", 10.5, true),
+                                    new GetSimilarProductsItemResponse("3", "product3", 12, false),
+                                    new GetSimilarProductsItemResponse("4", "product4", 15.25, true)
                                 );
                         }
                     );

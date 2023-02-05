@@ -1,5 +1,6 @@
 package backdev.infrastructure.handler.product.similar;
 
+import backdev.domain.product.Product;
 import backdev.infrastructure.util.validator.RequestParameterValidator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,5 +40,15 @@ public class GetSimilarProductsHandlerMapperShould {
         Mockito
             .verify(validator, Mockito.times(1))
             .mandatoryString(Mockito.any(), Mockito.any());
+    }
+
+    @Test public void
+    map_product_to_similar_product_response() {
+        Product productOne = new Product("1", "product1", 10.25, true);
+        GetSimilarProductsItemResponse expected = new GetSimilarProductsItemResponse("1", "product1", 10.25, true);
+
+        Assertions
+            .assertThat(mapper.toGetSimilarProductsItemResponse(productOne))
+            .isEqualTo(expected);
     }
 }

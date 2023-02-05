@@ -17,6 +17,12 @@ public class GetSimilarProductsHandlerMapper {
     }
 
     public GetSimilarProductsItemResponse toGetSimilarProductsItemResponse(Product product) {
-        throw new UnsupportedOperationException();
+        return
+            new GetSimilarProductsItemResponse(
+                product.id(),
+                product.name(),
+                product.price(),
+                product.availability()
+            );
     }
 }
