@@ -11,12 +11,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
-public class RemoteProductServerMock {
+public class RemoteProductServiceMock {
 
     private int port;
     private WireMockServer mockServer;
 
-    public RemoteProductServerMock(int port) {
+    public RemoteProductServiceMock(int port) {
         this.port = port;
     }
 
@@ -46,17 +46,17 @@ public class RemoteProductServerMock {
             );
     }
 
-    public void verifySimilarIds(int amount) {
+    public void verifySimilarIds(int amount, String productId) {
         mockServer
             .verify(
                 amount,
-                getRequestedFor(urlPathEqualTo("/product/1/similarids"))
+                getRequestedFor(urlPathEqualTo("/product/" + productId + "/similarids"))
             );
     }
 
     private void mockProductDetailsEndpoint() {
         IntStream
-            .rangeClosed(2, 4)
+            .rangeClosed(2, 5)
             .forEach(
                 id ->
                     mockServer
@@ -81,6 +81,17 @@ public class RemoteProductServerMock {
                             .withStatus(200)
                             .withHeader(ContentTypeHeader.KEY, ContentType.APPLICATION_JSON.getMimeType())
                             .withBody("[2, 3, 4]")
+                    )
+            );
+
+        mockServer
+            .stubFor(
+                get(urlPathEqualTo("/product/100/similarids"))
+                    .willReturn(
+                        aResponse()
+                            .withStatus(200)
+                            .withHeader(ContentTypeHeader.KEY, ContentType.APPLICATION_JSON.getMimeType())
+                            .withBody("[5]")
                     )
             );
     }

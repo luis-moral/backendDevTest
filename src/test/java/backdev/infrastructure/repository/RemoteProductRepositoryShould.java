@@ -24,7 +24,7 @@ public class RemoteProductRepositoryShould {
         client = Mockito.mock(RemoteProductClient.class);
         mapper = Mockito.mock(RemoteProductRepositoryMapper.class);
 
-        repository = new RemoteProductRepository(client, mapper);
+        repository = new RemoteProductRepository(client, 10_000, mapper);
     }
 
     @Test public void
@@ -55,6 +55,47 @@ public class RemoteProductRepositoryShould {
     }
 
     @Test public void
+    cache_product_details() {
+        RemoteProduct remoteProductOne = new RemoteProduct("1", "product1", 10.0, true);
+        Product productOne = new Product("1", "product1", 10.0, true);
+
+        Mockito
+            .when(client.product("1"))
+            .thenReturn(Mono.just(remoteProductOne));
+        Mockito
+            .when(client.product("2"))
+            .thenReturn(Mono.empty());
+
+        Mockito
+            .when(mapper.toProduct(remoteProductOne))
+            .thenReturn(productOne);
+
+        StepVerifier
+            .create(repository.find("1"))
+            .expectNextCount(1)
+            .verifyComplete();
+        StepVerifier
+            .create(repository.find("1"))
+            .expectNextCount(1)
+            .verifyComplete();
+        StepVerifier
+            .create(repository.find("2"))
+            .expectNextCount(0)
+            .verifyComplete();
+
+        Mockito
+            .verify(client, Mockito.times(1))
+            .product("1");
+        Mockito
+            .verify(client, Mockito.times(1))
+            .product("2");
+
+        Mockito
+            .verify(mapper, Mockito.times(1))
+            .toProduct(Mockito.any());
+    }
+
+    @Test public void
     find_similar_product_ids() {
         List<String> similarIds = List.of("2", "3", "4");
 
@@ -74,5 +115,35 @@ public class RemoteProductRepositoryShould {
         Mockito
             .verify(client, Mockito.times(1))
             .similarIds(Mockito.any());
+    }
+
+    @Test public void
+    cache_similar_product_ids() {
+        Mockito
+            .when(client.similarIds("1"))
+            .thenReturn(Flux.fromIterable(List.of("2", "3", "4")));
+        Mockito
+            .when(client.similarIds("2"))
+            .thenReturn(Flux.fromIterable(List.of("5")));
+
+        StepVerifier
+            .create(repository.findIdsSimilarTo("1"))
+            .expectNextCount(3)
+            .verifyComplete();
+        StepVerifier
+            .create(repository.findIdsSimilarTo("1"))
+            .expectNextCount(3)
+            .verifyComplete();
+        StepVerifier
+            .create(repository.findIdsSimilarTo("2"))
+            .expectNextCount(1)
+            .verifyComplete();
+
+        Mockito
+            .verify(client, Mockito.times(1))
+            .similarIds("1");
+        Mockito
+            .verify(client, Mockito.times(1))
+            .similarIds("2");
     }
 }

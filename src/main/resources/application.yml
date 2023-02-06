@@ -37,6 +37,11 @@ service:
   similar-products:
     parallelism: 5
 
+repository:
+  product:
+    cache:
+      duration: 30_000
+
 server:
   port: 5000
 

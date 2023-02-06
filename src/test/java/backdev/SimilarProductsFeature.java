@@ -1,7 +1,7 @@
 package backdev;
 
 import backdev.infrastructure.handler.product.similar.GetSimilarProductsItemResponse;
-import backdev.test.RemoteProductServerMock;
+import backdev.test.RemoteProductServiceMock;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,12 +14,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 @ActiveProfiles(profiles = "test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class)
 public class SimilarProductsFeature {
 
-    private static RemoteProductServerMock remoteProductServer;
+    private static RemoteProductServiceMock remoteProductService;
 
     @Value("${endpoint.product.path.similar}")
     private String similarProductsEndpoint;
@@ -29,13 +30,13 @@ public class SimilarProductsFeature {
 
     @BeforeAll
     public static void beforeAll() {
-        remoteProductServer = new RemoteProductServerMock(43001);
-        remoteProductServer.start();
+        remoteProductService = new RemoteProductServiceMock(43001);
+        remoteProductService.start();
     }
 
     @AfterAll
     public static void afterAll() {
-        remoteProductServer.stop();
+        remoteProductService.stop();
     }
 
     @Test public void
@@ -69,5 +70,23 @@ public class SimilarProductsFeature {
             .exchange()
                 .expectStatus()
                     .isBadRequest();
+    }
+
+    @Test public void
+    caches_calls_to_remote_product_service() {
+        IntStream
+            .range(0, 5)
+            .forEach(
+                value ->
+                    webClient
+                        .get()
+                            .uri(builder -> builder.path(similarProductsEndpoint).build("100"))
+                        .exchange()
+                            .expectStatus()
+                                .isOk()
+            );
+
+        remoteProductService.verifySimilarIds(1, "100");
+        remoteProductService.verifyProductDetails(1, "5");
     }
 }

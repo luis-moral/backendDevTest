@@ -1,7 +1,7 @@
 package backdev.infrastructure.client;
 
 import backdev.domain.exception.EntityNotFoundException;
-import backdev.test.RemoteProductServerMock;
+import backdev.test.RemoteProductServiceMock;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,16 +9,18 @@ import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RemoteProductClientShould {
 
-    private RemoteProductServerMock server;
+    private final static AtomicInteger PORT = new AtomicInteger(50_000);
+
+    private RemoteProductServiceMock server;
     private RemoteProductClient client;
     
     @BeforeEach
     public void setUp() {
-        server = new RemoteProductServerMock(randomPort());
+        server = new RemoteProductServiceMock(PORT.getAndIncrement());
         server.start();
 
         client = new RemoteProductClient(server.url());
@@ -68,13 +70,13 @@ public class RemoteProductClientShould {
             )
             .verifyComplete();
 
-        server.verifySimilarIds(1);
+        server.verifySimilarIds(1, "1");
     }
 
     @Test public void
     return_domain_exception_if_similar_product_ids_not_found() {
         StepVerifier
-            .create(client.product("25"))
+            .create(client.similarIds("25"))
             .consumeErrorWith(
                 error ->
                     Assertions
@@ -82,9 +84,5 @@ public class RemoteProductClientShould {
                         .isInstanceOf(EntityNotFoundException.class)
             )
             .verify();
-    }
-
-    private int randomPort() {
-        return new Random().nextInt(52_000, 53_000);
     }
 }
