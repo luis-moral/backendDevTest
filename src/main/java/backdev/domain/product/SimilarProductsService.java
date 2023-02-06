@@ -9,28 +9,28 @@ import java.util.logging.Level;
 public class SimilarProductsService {
 
     private final ProductRepository productRepository;
-    private final int parallelism;
+    private final int concurrency;
 
     public SimilarProductsService(
         ProductRepository productRepository,
-        int parallelism
+        int concurrency
     ) {
         this.productRepository = productRepository;
-        this.parallelism = parallelism;
+        this.concurrency = concurrency;
     }
 
     public Flux<Product> findProducts(String productId) {
         return
             productRepository
                 .findIdsSimilarTo(productId)
-                .parallel(parallelism)
-                .runOn(Schedulers.boundedElastic())
-                .flatMap(similarId ->
+                .flatMapSequential(similarId ->
                     Mono
                         .defer(() -> productRepository.find(similarId))
+                        .publishOn(Schedulers.boundedElastic())
                         .onErrorResume(error -> Mono.empty())
+                        .log(getClass().getName() + "_" + similarId, Level.FINE),
+                    concurrency
                 )
-                .sequential()
                 .log(getClass().getName(), Level.FINE);
     }
 }

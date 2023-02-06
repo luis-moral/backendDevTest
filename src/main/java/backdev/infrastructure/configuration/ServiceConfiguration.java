@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ServiceConfiguration {
 
-    @Value("${service.similar-products.parallelism}")
+    @Value("${service.similar-products.concurrency}")
     private int similarProductsParallelism;
 
     @Bean

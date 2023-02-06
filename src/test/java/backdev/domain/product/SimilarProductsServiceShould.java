@@ -21,16 +21,20 @@ public class SimilarProductsServiceShould {
     }
 
     @Test public void
-    return_similar_products() {
+    return_similar_products_ordered() {
         Product productTwo = new Product("2", "product2", 10, true);
         Product productThree = new Product("3", "product3", 12.5, false);
+        Product productFour = new Product("4", "product4", 18.5, true);
 
         Mockito
             .when(productRepository.findIdsSimilarTo("1"))
-            .thenReturn(Flux.just("2", "3"));
+            .thenReturn(Flux.just("2", "4", "3"));
         Mockito
             .when(productRepository.find("2"))
             .thenReturn(Mono.just(productTwo));
+        Mockito
+            .when(productRepository.find("4"))
+            .thenReturn(Mono.just(productFour));
         Mockito
             .when(productRepository.find("3"))
             .thenReturn(Mono.just(productThree));
@@ -45,16 +49,19 @@ public class SimilarProductsServiceShould {
                 products ->
                     Assertions
                         .assertThat(products)
-                        .containsExactlyInAnyOrder(productTwo, productThree)
+                        .containsExactly(productTwo, productFour, productThree)
             )
             .verifyComplete();
 
         Mockito
             .verify(productRepository, Mockito.times(1))
-            .findIdsSimilarTo("1");
+            .findIdsSimilarTo(Mockito.any());
         Mockito
             .verify(productRepository, Mockito.times(1))
             .find("2");
+        Mockito
+            .verify(productRepository, Mockito.times(1))
+            .find("4");
         Mockito
             .verify(productRepository, Mockito.times(1))
             .find("3");
@@ -94,7 +101,7 @@ public class SimilarProductsServiceShould {
 
         Mockito
             .verify(productRepository, Mockito.times(1))
-            .findIdsSimilarTo("1");
+            .findIdsSimilarTo(Mockito.any());
         Mockito
             .verify(productRepository, Mockito.times(1))
             .find("2");

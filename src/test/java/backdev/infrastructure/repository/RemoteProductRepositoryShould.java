@@ -108,7 +108,7 @@ public class RemoteProductRepositoryShould {
             .assertNext(ids ->
                 Assertions
                     .assertThat(ids)
-                    .containsExactlyInAnyOrderElementsOf(similarIds)
+                    .containsExactlyElementsOf(similarIds)
             )
             .verifyComplete();
 

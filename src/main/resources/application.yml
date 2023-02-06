@@ -35,7 +35,7 @@ resilience4j.circuitbreaker:
 
 service:
   similar-products:
-    parallelism: 5
+    concurrency: 5
 
 repository:
   product:

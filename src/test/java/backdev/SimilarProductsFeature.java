@@ -52,7 +52,7 @@ public class SimilarProductsFeature {
 
                             Assertions
                                 .assertThat(items)
-                                .containsExactlyInAnyOrder(
+                                .containsExactly(
                                     new GetSimilarProductsItemResponse("2", "product2", 10.5, true),
                                     new GetSimilarProductsItemResponse("3", "product3", 12, false),
                                     new GetSimilarProductsItemResponse("4", "product4", 15.25, true)
