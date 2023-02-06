@@ -1,6 +1,7 @@
 package backdev.infrastructure.component;
 
 import backdev.domain.exception.DomainException;
+import backdev.domain.exception.EntityNotFoundException;
 import backdev.infrastructure.util.validator.exception.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,10 @@ public class GlobalErrorMapper extends DefaultErrorAttributes {
     private void format(Throwable exception, Map<String, Object> map) {
         if (exception instanceof ResponseStatusException) {
             map.put("error", ((ResponseStatusException) exception).getReason());
+        }
+        else if (exception instanceof EntityNotFoundException) {
+            map.put("status", HttpStatus.NOT_FOUND.value());
+            map.put("error", exception.getMessage());
         }
         else if (exception instanceof ValidationException || exception instanceof DomainException) {
             map.put("status", HttpStatus.BAD_REQUEST.value());

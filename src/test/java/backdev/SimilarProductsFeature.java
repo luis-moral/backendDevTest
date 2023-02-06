@@ -14,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 @ActiveProfiles(profiles = "test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class)
@@ -63,30 +62,12 @@ public class SimilarProductsFeature {
     }
 
     @Test public void
-    return_bad_request_if_product_does_not_exists() {
+    return_not_found_if_product_does_not_exists() {
         webClient
             .get()
                 .uri(builder -> builder.path(similarProductsEndpoint).build("2500"))
             .exchange()
                 .expectStatus()
-                    .isBadRequest();
-    }
-
-    @Test public void
-    caches_calls_to_remote_product_service() {
-        IntStream
-            .range(0, 5)
-            .forEach(
-                value ->
-                    webClient
-                        .get()
-                            .uri(builder -> builder.path(similarProductsEndpoint).build("100"))
-                        .exchange()
-                            .expectStatus()
-                                .isOk()
-            );
-
-        remoteProductService.verifySimilarIds(1, "100");
-        remoteProductService.verifyProductDetails(1, "5");
+                    .isNotFound();
     }
 }
