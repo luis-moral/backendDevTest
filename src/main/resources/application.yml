@@ -40,7 +40,7 @@ service:
 repository:
   product:
     cache:
-      duration: 30_000
+      duration: 60_000
 
 server:
   port: 5000
